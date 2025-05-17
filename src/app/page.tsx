@@ -1,52 +1,58 @@
-'use client'; 
-
-import { useAuth } from '@/providers/AuthProvider'; 
-import LoginForm from '@/components/LoginForm'; 
-import RegisterForm from '@/components/RegisterForm'; 
-import { signOut } from 'firebase/auth';
-import { auth } from '@/config/firebase'; 
-import LoadingPage from './loading';
+"use client";
+import { useAuth } from "@/providers/AuthProviderr";
+import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
+import { onValue, ref } from "firebase/database";
+import { database } from "@/config/firebase";
 
 const HomePage = () => {
-  const { user, loading } = useAuth(); 
-  console.log("User:", user); // Log the user object
+  const { user, loading } = useAuth();
+  const [AllUsers, setAllUsers] = useState<any>([]);
+  console.log(AllUsers);
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      console.log("User signed out.");
-    } catch (error) {
-      console.error("Sign out error:", error);
+  useEffect(() => {
+    if (user) {
+      const useRef = ref(database, `users`);
+
+      onValue(useRef, (snapshot) => {
+        const currentUsers = snapshot.val();
+
+        if (!currentUsers) {
+          return;
+        }
+        const AllUsers = Object.keys(currentUsers).map((key) => ({
+          id: key,
+          ...currentUsers[key],
+        }));
+
+        setAllUsers(AllUsers);
+      });
     }
-  };
+  }, [user]);
 
-  if (loading) {
-    return <LoadingPage />; // Show loading state while checking auth
-  }
+  useEffect(() => {
+    if (!user?.accessToken) {
+      redirect("/login");
+    }
+  }, [user]);
 
   return (
     <div>
-      <h1>My Awesome App</h1>
-
-      {user ? (
-        // If user is logged in, show this content
-        <div>
-          <p>Welcome, {user?.email}!</p>
-          <button onClick={handleSignOut}>Sign Out</button>
-          {/* Add components for communication/RTDB here */}
-          {/* Now you know who the user is (user.uid)! */}
-        </div>
-      ) : (
-        // If no user is logged in, show login/register forms
-        <div>
-          <p>Please log in or register.</p>
-          <LoginForm />
-          <p>Or</p>
-          <RegisterForm />
-        </div>
-      )}
+      <h1 className="text-2xl font-bold">Welcome to the Home Page</h1>
+      {AllUsers.length &&
+        AllUsers.map((oneUser: any) => {
+          if (oneUser.id === user?.uid) return null;
+          return (
+            <div key={oneUser.id}>
+              <p>{oneUser.email}</p>
+            </div>
+          );
+        })}
     </div>
   );
 };
 
 export default HomePage;
+
+// tomorrow i will integrate the cdn to upload images
+// i will impelement the redux toolkit and continue to working on update user profile like image , emai , password

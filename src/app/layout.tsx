@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/providers/AuthProvider";
+import { AuthProvider } from "@/providers/AuthProviderr";
 import { ConfigProvider } from "antd";
+import Navbar from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,22 +28,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh]`}
       >
         <ConfigProvider
           theme={{
             token: {
-              colorPrimary: '#00b96b', // Custom primary color
+              colorPrimary: "#0082b9", // Custom primary color
               borderRadius: 4, // Default border radius
             },
           }}
         >
-         <AuthProvider>
-        {children}
-        </AuthProvider>
+          <AuthProvider>
+            <Navbar />
+            {children}
+          </AuthProvider>
         </ConfigProvider>
-        
-        
       </body>
     </html>
   );
