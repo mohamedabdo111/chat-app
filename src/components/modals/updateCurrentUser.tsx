@@ -38,9 +38,6 @@ const UpdateCurrentUser = ({ currenrtUser }: { currenrtUser: any }) => {
     setIsModalOpen(false);
   };
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-  };
   return (
     <>
       <FaPenToSquare className="cursor-pointer" onClick={showModal} />

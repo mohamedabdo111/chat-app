@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { onValue, ref } from "firebase/database";
 import { database } from "@/config/firebase";
+import { User } from "firebase/auth";
+import ListUser from "@/components/listUsers/listUser";
+import ChatArea from "@/components/chat/chatArea";
 
 const HomePage = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const [AllUsers, setAllUsers] = useState<any>([]);
-  console.log(AllUsers);
 
   useEffect(() => {
     if (user) {
@@ -28,17 +30,23 @@ const HomePage = () => {
         setAllUsers(AllUsers);
       });
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
-    if (!user?.accessToken) {
+    if (!user) {
       redirect("/login");
     }
   }, [user]);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Welcome to the Home Page</h1>
+    <section className="flex  h-full">
+      <div className="w-1/4 border-r-2 border-gray-300 p-3">
+        <ListUser />
+      </div>
+      <div>
+        <ChatArea />
+      </div>
+      {/* <h1 className="text-2xl font-bold">Welcome to the Home Page</h1>
       {AllUsers.length &&
         AllUsers.map((oneUser: any) => {
           if (oneUser.id === user?.uid) return null;
@@ -47,8 +55,8 @@ const HomePage = () => {
               <p>{oneUser.email}</p>
             </div>
           );
-        })}
-    </div>
+        })} */}
+    </section>
   );
 };
 

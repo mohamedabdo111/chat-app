@@ -3,17 +3,34 @@ import { Avatar, Button, Divider, Drawer, message } from "antd";
 import { getAuth } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateCurrentUser from "./modals/updateCurrentUser";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { IUserState, setCurrentUser } from "@/redux/slices/userSlice";
 
 const Navbar = () => {
   const auth = getAuth();
-  const currentUser = auth.currentUser;
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const showDrawer = () => {
     setOpen(true);
   };
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: any) => state.user);
+
+  useEffect(() => {
+    const getCurrentUser = () => {
+      try {
+        const currentuser = auth.currentUser;
+        console.log(currentuser);
+        dispatch(setCurrentUser(currentuser));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCurrentUser();
+  }, [auth.currentUser]);
 
   const onClose = () => {
     setOpen(false);

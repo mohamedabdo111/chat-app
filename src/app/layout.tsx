@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/providers/AuthProviderr";
 import { ConfigProvider } from "antd";
 import Navbar from "@/components/Navbar";
+import ReduxProvider from "@/providers/reduxProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +39,12 @@ export default function RootLayout({
             },
           }}
         >
-          <AuthProvider>
-            <Navbar />
-            {children}
-          </AuthProvider>
+          <ReduxProvider>
+            <AuthProvider>
+              <Navbar />
+              {children}
+            </AuthProvider>
+          </ReduxProvider>
         </ConfigProvider>
       </body>
     </html>
